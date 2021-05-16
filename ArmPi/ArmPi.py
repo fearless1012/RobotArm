@@ -25,28 +25,28 @@ def startArmPi():
     RPCServer.QUEUE = QUEUE_RPC
 
     threading.Thread(target=RPCServer.startRPCServer,
-                     daemon=True).start()  # rpc服务器
+                     daemon=True).start()  # rpc server
     threading.Thread(target=MjpgServer.startMjpgServer,
-                     daemon=True).start()  # mjpg流服务器
+                     daemon=True).start()  # mjpg streaming server
     
     loading_picture = cv2.imread('/home/pi/ArmPi/CameraCalibration/loading.jpg')
-    cam = Camera.Camera()  # 相机读取
+    cam = Camera.Camera()  # Camera reading
     Running.cam = cam
 
     while True:
         time.sleep(0.03)
 
-        # 执行需要在本线程中执行的RPC命令
+        # Execute RPC commands that need to be executed in this thread
         while True:
             try:
                 req, ret = QUEUE_RPC.get(False)
                 event, params, *_ = ret
-                ret[2] = req(params)  # 执行RPC命令
+                ret[2] = req(params)  # Execute RPC commands
                 event.set()
             except:
                 break
         #####
-        # 执行功能玩法程序：
+        # Executive function play procedure:
         try:
             if Running.RunningFunc > 0 and Running.RunningFunc <= 6:
                 if cam.frame is not None:
